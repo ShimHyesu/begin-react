@@ -6,7 +6,10 @@ import Wrapper from './Wrapper.js';
 function App() {
   return (
     <Wrapper>
-      <Hello name = "react" color="red"/>
+      {/* 이름만 넣어준것 -> true로 간주 
+      <Hello name = "react" color="red" isSpecial={true} />
+      */}
+      <Hello name = "react" color="red" isSpecial />
       <Hello color="pink"/>
     </Wrapper>
   );
