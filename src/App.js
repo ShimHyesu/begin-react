@@ -1,21 +1,14 @@
 import React from 'react';
 import Hello from './Hello.js';
-import './App.css';
+//<Wrapper 쓰고 엔터 누르면 자동으로 불러와지는거 가능
+import Wrapper from './Wrapper.js';
 
 function App() {
-  const name = 'react';
-  const style = {
-    backgroundColor: 'black',
-    color: 'aqua',
-    fontSize: 24, //기본 단위 픽셀
-    padding: '1rem',
-  }
   return (
-    <>
-      <Hello />
-      <div style={style}>{name}</div>
-      <div className="gray-box"></div>
-    </>
+    <Wrapper>
+      <Hello name = "react" color="red"/>
+      <Hello color="pink"/>
+    </Wrapper>
   );
 }
 

@@ -1,7 +1,16 @@
 import React from 'react';
 
-function Hello() {
-    return <div>안녕하세요</div>;
+//props대신 구조분해를 이용하여 color와 name추출
+function Hello({color, name}) {
+    //console.log(props);
+    return <div style={{
+        color,
+    }}>안녕하세요 {name}</div>;
 }
+
+//기본값 설정
+Hello.defaultProps = {
+    name: '이름 없음',
+};
 
 export default Hello;
