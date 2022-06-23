@@ -1,7 +1,12 @@
-import React, { useRef, useState} from 'react';
+import React, { useRef, useState, useMemo, useCallback} from 'react';
 import UserList from './UserList.js';
 import CreateUser from './CreateUser.js';
 
+//active값이 true인 사용자 수 세어서 화면에 렌더링
+function countActiveUsers(users){
+  console.log('활성 사용자 수 세는중...');
+  return users.filter(user => user.active).length;
+}
 
 function App() {
   const [inputs, setInputs] = useState({
@@ -11,13 +16,13 @@ function App() {
 
   const {username, email}=inputs;
 
-  const onChange = e =>{
+  const onChange = useCallback(e =>{
     const {name, value} = e.target;
-    setInputs({
+    setInputs(inputs => ({
       ...inputs,
       [name]:value
-    });
-  };
+    }));
+  },[]);
 
   const [users,setUsers] = useState([
     {
@@ -40,47 +45,45 @@ function App() {
     },
   ]);
 
-  //useRef: 컴포넌트에서 변경할 수 있는 변수 관리 -> 설정 후 바로 조회 가능
-  //파라미터 -> .current의 기본값
   const nextId = useRef(4);
 
-  //배열에 항목 추가 -> 불변성 지키기
-  const onCreate =() => {
+  //배열에 항목 추가
+  //useCallback Hook -> 함수 재사용
+  const onCreate = useCallback(() => {
     const user={
       id:nextId.current,
       username,
       email,
     };
-    //방법1: spread 연산자 ...
-    //setUsers([...users,user]);
-
-    //방법2: concat함수
-    setUsers(users.concat(user));
+    //함수형 업데이트를 통해 deps에서 users를 참조하지 않도록 함
+    //users가 바뀔때마다 리렌더링 되지 않도록
+    setUsers(users => users.concat(user));
     
     setInputs({
       username: '',
       email:'',
     });
     nextId.current += 1;
-  };
+  },[username,email]);
 
-  //배열 항목 삭제 -> 불변성 지키기
-  const onRemove = id => {
-    //방법: filter 배열 내장함수 사용
-    //user.id가 파라미터로 일치하지 않는 원소만 추출하여 새로운 배열 생성
-    //= user.id가 id인 것 제거
-    setUsers(users.filter(user => user.id != id));
-  };
+  //배열 항목 삭제
+  const onRemove = useCallback(id => {
+    setUsers(users => users.filter(user => user.id != id));
+  },[]);
 
-  //배열 항목 수정 -> 불변성 지키기
-  const onToggle = id => {
-    //방법: map함수 사용
-    setUsers(
+  //배열 항목 수정
+  const onToggle = useCallback(id => {
+    setUsers(users => (
       users.map(user => 
         user.id===id?{...user,active:!user.active}:user
         )
-      );
-  };
+      ));
+  },[]);
+
+  //const count = countActiveUsers(users);
+  //input값 바뀔 때에도 컴포넌트가 리렌더링됨 -> 자원 낭비
+  //useMemo: 이전 계산한 값 재사용
+  const count = useMemo(() => countActiveUsers(users),[users]);
 
   return (
     <>
@@ -95,6 +98,7 @@ function App() {
         onRemove={onRemove} 
         onToggle={onToggle}
       />
+      <div>활성사용자 수 : {count}</div>
     </>
   );
 }
