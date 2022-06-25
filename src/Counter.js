@@ -1,24 +1,25 @@
-import React,{useState} from 'react';
+import React,{useReducer} from 'react';
+
+//reducer함수: 현재 상태와 액션 객체를 파라미터로 받아와 새로운 상태로 반환
+function reducer (state, action) {
+    switch (action.type) {
+        case 'INCREAMENT':
+            return state + 1;
+        case 'DECREAMENT':
+            return state - 1;
+        default:
+            return state;
+    }
+}
 
 function Counter() {
-    //useState(상태의 기본값)
-    // 첫번째 원소-> 현재 상태, 두번째 원소 -> Setter함수
-    const [number, setNumber] = useState(0);
+    const [number, dispatch] = useReducer(reducer, 0);
 
     const onIncrease =()=> {
-        //console.log('+1')
-        //setNumber(number+1);
-
-        //함수형 업데이트
-        setNumber(prevNumber => prevNumber+1);
+        dispatch({type:'INCREAMENT'});
     }
     const onDecrease =()=> {
-        //console.log('-1')
-        //setNumber(number-1);
-
-        //함수형 업데이트
-        setNumber(prevNumber => prevNumber-1);
-
+        dispatch({type:'DECREAMENT'});
     }
     return (
         <div>
