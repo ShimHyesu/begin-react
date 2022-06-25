@@ -54,20 +54,20 @@ function reducer(state, action) {
 
 }
 
+//UserDispatch라는 이름으로 내보내줌
+export const UserDispatch = React.createContext(null);
+
 function App() {
 
-  //useInputs라는 커스텀 Hook 사용
   const [{username, email}, onChange, reset] = useInputs({
     username:'',
     email:'',
   });
 
   const [state, dispatch] = useReducer(reducer, initialState);
-  const nextId = useRef(4);
-
   const {users} = state;
 
-
+  const nextId = useRef(4);
 
   const count = useMemo(()=>countActiveUsers(users),[users]);
 
@@ -85,37 +85,17 @@ function App() {
     nextId.current+=1;
   },[username, email]);
 
-  //활성 사용자 변경
-  const onToggle = useCallback(id => {
-    dispatch({
-      type: 'TOGGLE_USER',
-      id
-    });
-  },[]);
-
-  //배열 항목 삭제
-  const onRemove = useCallback(id => {
-    dispatch({
-      type: 'REMOVE_USER',
-      id,
-    });
-  },[]);
-
   return (
-    <>
+    <UserDispatch.Provider value={dispatch}>
       <CreateUser 
         username={username} 
         email={email} 
         onChange={onChange}
         onCreate={onCreate}
       />
-      <UserList 
-        users={users} 
-        onRemove={onRemove}
-        onToggle={onToggle}
-      />
+      <UserList users={users} />
       <div>활성사용자 수: {count}</div>
-    </>
+    </UserDispatch.Provider>
   );
 }
 
